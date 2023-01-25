@@ -8,10 +8,10 @@ let db;
 
 try {
     await mongoClient.connect()
-    console.log("successfully connected to MongoDB!");
+    console.log("Conectado ao MongoDB!");
     db = mongoClient.db();
 } catch (err) {
-    console.log(`failed to conect to mongoDB : ${err.message}`);
+    console.log(`conexão falhou  mongoDB : ${err.message}`);
 }
 
 export default db
