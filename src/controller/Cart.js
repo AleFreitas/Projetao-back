@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import { v4 as uuidV4 } from 'uuid';
 import db from '../config/database.js';
-import { cartSchema } from '../Model/CartSchema.js';
+import { cartSchema, postItemSchema } from '../Model/CartSchema.js';
 
 export async function createCart(req, res) {
     const { sessionId, chosenItems } = req.body;
@@ -26,27 +26,32 @@ export async function getNumberOfItems(req, res) {
     const { sessionId } = req.body;
     try {
         const cart = await db.collection("carts").findOne({ sessionId })
-        res.status(200).send(cart.chosenItems.length)
+        res.status(200).send({ num: cart.chosenItems.length })
     } catch (error) {
         res.status(500).send(error.message)
     }
 }
 
 export async function postItem(req, res) {
-    const { sessionId, productId } = req.body;
+    const { sessionId, productId, quantity } = req.body;
+    
+    const { error } = postItemSchema.validate({ sessionId, productId, quantity })
 
+    if (error) {
+        const errorMessages = error.details.map(err => err.message)
+        return res.status(422).send(errorMessages)
+    }
     try {
-        const cart = await db.collection("carts").findOne({ sessionId })
+        let cart = await db.collection("carts").findOne({ sessionId })
         if (!cart) {
             res.status(400).send("no such session in the server")
         }
-        const updateCart = await db.collection("carts").updateOne({ sessionId }, { $set: { chosenItems: [...cart.chosenItems, productId] } })
-        res.status(200).send(cart.chosenItems.length)
+        for (let i = 0; i < quantity; i++) {
+            await db.collection("carts").updateOne({ sessionId }, { $set: { chosenItems: [...cart.chosenItems, productId] } })
+            cart = await db.collection("carts").findOne({ sessionId })
+        }
+        res.status(200).send("item inserido com sucesso")
     } catch (error) {
         res.status(500).send(error.message)
     }
-}
-
-export async function removeItem(req, req) {
-
 }
