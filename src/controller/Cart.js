@@ -14,7 +14,7 @@ export async function createCart(req, res) {
     }
 
     try {
-        await db.collection("carts").insertOne({ sessionId, chosenItems })
+        await db.collection("carts").insertOne({ userId: "", sessionId, chosenItems })
         res.sendStatus(201)
 
     } catch (error) {
@@ -24,7 +24,6 @@ export async function createCart(req, res) {
 
 export async function getNumberOfItems(req, res) {
     const { sessionId } = req.body;
-
     try {
         const cart = await db.collection("carts").findOne({ sessionId })
         res.status(200).send(cart.chosenItems.length)
@@ -41,9 +40,13 @@ export async function postItem(req, res) {
         if (!cart) {
             res.status(400).send("no such session in the server")
         }
-        const updateCart = await db.collection("carts").updateOne({ sessionId }, { $set: {chosenItems: [...cart.chosenItems,productId]} })
+        const updateCart = await db.collection("carts").updateOne({ sessionId }, { $set: { chosenItems: [...cart.chosenItems, productId] } })
         res.status(200).send(cart.chosenItems.length)
     } catch (error) {
         res.status(500).send(error.message)
     }
+}
+
+export async function removeItem(req, req) {
+
 }
