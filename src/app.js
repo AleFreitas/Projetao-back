@@ -5,11 +5,11 @@ import authRoutes from "./routes/AuthRoutes.js"
 
 dotenv.config();
 
-const app = express()
-app.use(express.json())
-app.use(cors())
+const server = express()
+server.use(express.json())
+server.use(cors())
 
-app.use([authRoutes])
+server.use([authRoutes])
 
 const port = process.env.PORT || 5000;
 server.listen(port, () => console.log(`Servidor funcionando na porta: ${port}`));
