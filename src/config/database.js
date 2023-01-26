@@ -1,4 +1,5 @@
-import { MongoClient } from "mongodb";
+import { MongoClient} from "mongodb";
+
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -8,7 +9,7 @@ let db;
 
 try {
     await mongoClient.connect()
-    console.log("Conectado ao MongoDB!");
+    console.log("Conectado ao MongoDB.");
     db = mongoClient.db();
 } catch (err) {
     console.log(`conexão falhou  mongoDB : ${err.message}`);
