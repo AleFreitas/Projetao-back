@@ -34,7 +34,7 @@ export async function getNumberOfItems(req, res) {
 
 export async function postItem(req, res) {
     const { sessionId, productId, quantity } = req.body;
-    
+
     const { error } = postItemSchema.validate({ sessionId, productId, quantity })
 
     if (error) {
@@ -54,4 +54,25 @@ export async function postItem(req, res) {
     } catch (error) {
         res.status(500).send(error.message)
     }
+}
+
+export async function removeItem(req, res) {
+    const { sessionId, productId } = req.body;
+
+    try {
+        const cart = await db.collection("carts").findOne({ sessionId })
+        if (!cart) {
+            res.status(400).send("no such session in the server")
+        }
+        const chosenItems = cart.chosenItems;
+        const index = chosenItems.indexOf(productId)
+        chosenItems.splice(index, 1)
+
+        await db.collection("carts").updateOne({ sessionId }, { $set: { chosenItems: chosenItems } })
+        
+        res.status(200).send("item removido com sucesso")
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+
 }
