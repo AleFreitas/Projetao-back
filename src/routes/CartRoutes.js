@@ -1,4 +1,4 @@
-import { getNumberOfItems, createCart, postItem } from '../controller/Cart';
+import { getNumberOfItems, createCart, postItem } from '../controller/Cart.js';
 import { Router } from 'express';
 
 const cartRouter = Router()
