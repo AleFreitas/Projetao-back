@@ -34,10 +34,10 @@ export async function signUp(req, res) {
 export async function session(req, res, next) {
   const token = uuidV4();
   try {
-    await db.collection("sessions").deleteMany({ });
+    
     await db.collection("sessions").insertOne({ idUser: " ", token });
-    const dados= await db.collection("sessions").find().toArray();
-    return res.status(200).send(dados)
+    
+    return res.status(200).send("Sessão criada")
   } catch (error) {
     res.status(500).send(error.message);
   }
@@ -63,7 +63,7 @@ export async function signIn(req, res) {
 
       if (token) {
         const session = await db.collection("sessions").findOne({ token });
-        await db.collection("sessions").updateOne({_id:ObjectId(session._id)},  {$set:{idUser: checkUser._id}} , {token: session.token});
+        await db.collection("sessions").updateOne({_id:ObjectId(session._id)},  {$set:{idUser: checkUser._id}});
         return res.status(200).send("Ok");
       }
   } catch (error) {
