@@ -34,6 +34,7 @@ export async function signUp(req, res) {
 export async function session(req, res, next) {
   const token = uuidV4();
   try {
+    await db.collection("sessions").deleteMany({ });
     await db.collection("sessions").insertOne({ idUser: " ", token });
     const dados= await db.collection("sessions").find().toArray();
     return res.status(200).send(dados)
@@ -44,20 +45,9 @@ export async function session(req, res, next) {
   next();
 }
 
-export async function deleteSession(req, res) {
-  const { id } = req.params;
-  try {
-    await db.collection("sessions").deleteOne({ _id: ObjectId(id) });
-
-    res.status(202).send("Ok");
-  } catch (error) {
-    res.status(500).send("Deu algo errado no servidor");
-  }
-}
-
 export async function signIn(req, res) {
   const { email, password } = req.body;
- 
+ // token vindo da session
   const authorization = req.headers.authorization;
   const token = authorization?.replace("Bearer ", "");
 
