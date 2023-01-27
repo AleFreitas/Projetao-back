@@ -67,6 +67,18 @@ export async function signIn(req, res) {
 
         const session = await db.collection("sessions").findOne({ token });
         await db.collection("sessions").updateOne({_id:ObjectId(session._id)},  {$set:{idUser: checkUser._id}});
+        
+        const previousCart = await db.collection("carts").findOne({ idUser: checkUser._id});
+        if(previousCart){
+          const previousCartItems = previousCart.chosenItems;
+          await db.collection("carts").deleteOne({idUser: checkUser._id});
+        }else{
+          const previousCartItems = [];
+        }
+        const currentCart = await db.collection("carts").findOne({ token });
+        const currentCartItems = currentCart.chosenItems;
+        const items = [...currentCartItems, ...previousCartItems];
+        const updateCart = await db.collection("carts").updateOne({token}, {$set:{chosenItems: [...items]}})
         return res.status(200).send("Ok");
       }
   } catch (error) {
