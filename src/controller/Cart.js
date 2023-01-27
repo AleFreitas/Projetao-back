@@ -4,9 +4,9 @@ import db from '../config/database.js';
 import { cartSchema, postItemSchema } from '../Model/CartSchema.js';
 
 export async function createCart(req, res) {
-    const { sessionId, chosenItems } = req.body;
+    const { token, chosenItems } = req.body;
 
-    const { error } = cartSchema.validate({ sessionId, chosenItems })
+    const { error } = cartSchema.validate({ token, chosenItems })
 
     if (error) {
         const errorMessages = error.details.map(err => err.message)
@@ -14,7 +14,7 @@ export async function createCart(req, res) {
     }
 
     try {
-        await db.collection("carts").insertOne({ userId: "", sessionId, chosenItems })
+        await db.collection("carts").insertOne({ userId: "", token, chosenItems })
         res.sendStatus(201)
 
     } catch (error) {
@@ -23,9 +23,9 @@ export async function createCart(req, res) {
 }
 
 export async function getNumberOfItems(req, res) {
-    const { sessionId } = req.body;
+    const { token } = req.body;
     try {
-        const cart = await db.collection("carts").findOne({ sessionId })
+        const cart = await db.collection("carts").findOne({ token })
         res.status(200).send({ num: cart.chosenItems.length })
     } catch (error) {
         res.status(500).send(error.message)
@@ -33,22 +33,22 @@ export async function getNumberOfItems(req, res) {
 }
 
 export async function postItem(req, res) {
-    const { sessionId, productId, quantity } = req.body;
+    const { token, productId, quantity } = req.body;
 
-    const { error } = postItemSchema.validate({ sessionId, productId, quantity })
+    const { error } = postItemSchema.validate({ token, productId, quantity })
 
     if (error) {
         const errorMessages = error.details.map(err => err.message)
         return res.status(422).send(errorMessages)
     }
     try {
-        let cart = await db.collection("carts").findOne({ sessionId })
+        let cart = await db.collection("carts").findOne({ token })
         if (!cart) {
             res.status(400).send("no such session in the server")
         }
         for (let i = 0; i < quantity; i++) {
-            await db.collection("carts").updateOne({ sessionId }, { $set: { chosenItems: [...cart.chosenItems, productId] } })
-            cart = await db.collection("carts").findOne({ sessionId })
+            await db.collection("carts").updateOne({ token }, { $set: { chosenItems: [...cart.chosenItems, productId] } })
+            cart = await db.collection("carts").findOne({ token })
         }
         res.status(200).send("item inserido com sucesso")
     } catch (error) {
@@ -57,10 +57,10 @@ export async function postItem(req, res) {
 }
 
 export async function removeItem(req, res) {
-    const { sessionId, productId } = req.body;
+    const { token, productId } = req.body;
 
     try {
-        const cart = await db.collection("carts").findOne({ sessionId })
+        const cart = await db.collection("carts").findOne({ token })
         if (!cart) {
             res.status(400).send("no such session in the server")
         }
@@ -68,7 +68,7 @@ export async function removeItem(req, res) {
         const index = chosenItems.indexOf(productId)
         chosenItems.splice(index, 1)
 
-        await db.collection("carts").updateOne({ sessionId }, { $set: { chosenItems: chosenItems } })
+        await db.collection("carts").updateOne({ token }, { $set: { chosenItems: chosenItems } })
         
         res.status(200).send("item removido com sucesso")
     } catch (error) {
