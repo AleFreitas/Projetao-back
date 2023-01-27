@@ -4,7 +4,9 @@ import db from '../config/database.js';
 import { cartSchema, postItemSchema } from '../Model/CartSchema.js';
 
 export async function createCart(req, res) {
-    const { token, chosenItems } = req.body;
+    const { chosenItems } = req.body;
+    const authorization = req.headers.authorization;
+    const token = authorization?.replace("Bearer ", "");
 
     const { error } = cartSchema.validate({ token, chosenItems })
 
@@ -23,7 +25,8 @@ export async function createCart(req, res) {
 }
 
 export async function getNumberOfItems(req, res) {
-    const { token } = req.body;
+    const authorization = req.headers.authorization;
+    const token = authorization?.replace("Bearer ", "");
     try {
         const cart = await db.collection("carts").findOne({ token })
         res.status(200).send({ num: cart.chosenItems.length })
@@ -33,7 +36,9 @@ export async function getNumberOfItems(req, res) {
 }
 
 export async function postItem(req, res) {
-    const { token, productId, quantity } = req.body;
+    const { productId, quantity } = req.body;
+    const authorization = req.headers.authorization;
+    const token = authorization?.replace("Bearer ", "");
 
     const { error } = postItemSchema.validate({ token, productId, quantity })
 
@@ -57,7 +62,9 @@ export async function postItem(req, res) {
 }
 
 export async function removeItem(req, res) {
-    const { token, productId } = req.body;
+    const { productId } = req.body;
+    const authorization = req.headers.authorization;
+    const token = authorization?.replace("Bearer ", "");
 
     try {
         const cart = await db.collection("carts").findOne({ token })
