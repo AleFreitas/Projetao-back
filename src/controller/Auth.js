@@ -34,8 +34,10 @@ export async function signUp(req, res) {
 export async function session(req, res, next) {
   const token = uuidV4();
   try {
+    
     await db.collection("sessions").insertOne({ idUser: "", token });
-    return res.status(200).send(token)
+    
+    return res.status(200).send("Sessão criada")
   } catch (error) {
     res.status(500).send(error.message);
   }
