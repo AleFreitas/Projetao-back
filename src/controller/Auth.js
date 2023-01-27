@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import { v4 as uuidV4 } from "uuid";
 import db from "../config/database.js";
 import { userSchema } from "../Schemas/AuthSchema.js";
+import { ObjectId } from "mongodb";
 
 export async function signUp(req, res) {
   const { name, email, password, confirmPassword } = req.body;
@@ -30,8 +31,35 @@ export async function signUp(req, res) {
   }
 }
 
+export async function session(req, res, next) {
+  const token = uuidV4();
+  try {
+    await db.collection("sessions").insertOne({ idUser: " ", token });
+    const dados= await db.collection("sessions").find().toArray();
+    return res.status(200).send(dados)
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+  res.locals.user = user;
+  next();
+}
+
+export async function deleteSession(req, res) {
+  const { id } = req.params;
+  try {
+    await db.collection("sessions").deleteOne({ _id: ObjectId(id) });
+
+    res.status(202).send("Ok");
+  } catch (error) {
+    res.status(500).send("Deu algo errado no servidor");
+  }
+}
+
 export async function signIn(req, res) {
   const { email, password } = req.body;
+ 
+  const authorization = req.headers.authorization;
+  const token = authorization?.replace("Bearer ", "");
 
   try {
     const checkUser = await db.collection("users").findOne({ email });
@@ -43,13 +71,11 @@ export async function signIn(req, res) {
     if (!isCorrectPassword)
       return res.status(400).send("Usuário ou senha incorretos");
 
-    const token = uuidV4();
-
-    await db
-      .collection("sessions")
-      .insertOne({ idUser: checkUser._id, token });
-    console.log("token", token);
-    return res.status(200).send(token);
+      if (token) {
+        const session = await db.collection("sessions").findOne({ token });
+        await db.collection("sessions").updateOne({_id:ObjectId(session._id)},  {$set:{idUser: checkUser._id}} , {token: session.token});
+        return res.status(200).send("Ok");
+      }
   } catch (error) {
     res.status(500).send(error.message);
   }

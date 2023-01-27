@@ -54,7 +54,6 @@ export async function deleteProduct(req, res) {
   const { id } = req.params;
   try {
     await db.collection("products").deleteOne({ _id: ObjectId(id) });
-
     res.status(202).send("Ok");
   } catch (error) {
     res.status(500).send("Deu algo errado no servidor");
