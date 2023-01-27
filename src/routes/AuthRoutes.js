@@ -1,10 +1,11 @@
-import { signIn, signUp } from "../controller/Auth.js"
+import {session, signIn, signUp } from "../controller/Auth.js"
 import { Router } from 'express'
 
-const authRouter = Router()
+const AuthRoutes = Router()
 
 // Rotas de autenticação
-authRouter.post("/sign-up", signUp)
-authRouter.post("/sign-in", signIn)
-
-export default authRouter
+AuthRoutes.post("/sessions", session)
+AuthRoutes.delete("/sessions", session)
+AuthRoutes.post("/sign-up", signUp)
+AuthRoutes.post("/sign-in", signIn)
+export default AuthRoutes

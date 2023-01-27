@@ -1,16 +1,16 @@
 import express from "express"
 import dotenv from "dotenv";
 import cors from "cors"
-import authRoutes from "./routes/AuthRoutes.js"
+import AuthRoutes from "./routes/AuthRoutes.js"
+import ProductsRouttes from "./routes/ProductsRouttes.js"
 import cartRoutes from "./routes/CartRoutes.js";
-
 dotenv.config();
 
-const server = express()
-server.use(express.json())
-server.use(cors())
+const app = express()
+app.use(express.json())
+app.use(cors())
 
-server.use([authRoutes, cartRoutes])
+app.use([AuthRoutes,ProductsRouttes,cartRoutes])
 
 const port = process.env.PORT || 5000;
-server.listen(port, () => console.log(`Servidor funcionando na porta: ${port}`));
+app.listen(port, () => console.log(`Servidor funcionando na porta: ${port}`));
