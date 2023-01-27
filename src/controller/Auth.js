@@ -60,8 +60,13 @@ export async function signIn(req, res) {
       return res.status(400).send("Usuário ou senha incorretos");
 
       if (token) {
+        const removableSession = await db.collection("sessions").findOne({idUser: checkUser._id})
+        if(removableSession){
+          await db.collection("sessions").deleteOne({idUser: checkUser._id});
+        }
+
         const session = await db.collection("sessions").findOne({ token });
-        await db.collection("sessions").updateOne({_id:ObjectId(session._id)},  {$set:{idUser: checkUser._id}} , {token: session.token});
+        await db.collection("sessions").updateOne({_id:ObjectId(session._id)},  {$set:{idUser: checkUser._id}});
         return res.status(200).send("Ok");
       }
   } catch (error) {
