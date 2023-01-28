@@ -7,6 +7,6 @@ export const cartSchema = joi.object({
 
 export const postItemSchema = joi.object({
     token:joi.string().required(),
-    productId:joi.string().required(), 
+    product:joi.object().required(), 
     quantity:joi.number().required()
 })
