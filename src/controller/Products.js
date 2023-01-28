@@ -1,4 +1,5 @@
 import db from "../config/database.js";
+import { v4 as uuidV4 } from "uuid";
 import { ObjectId } from 'mongodb';
 
 export async function listProducts(req, res) {
