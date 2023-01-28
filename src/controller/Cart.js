@@ -16,11 +16,11 @@ export async function getNumberOfItems(req, res) {
 }
 
 export async function postItem(req, res) {
-    const { product, quantity } = req.body;
+    const { product } = req.body;
     const authorization = req.headers.authorization;
     const token = authorization?.replace("Bearer ", "");
 
-    const { error1 } = postItemSchema.validate({ token, product, quantity })
+    const { error1 } = postItemSchema.validate({ token, product })
     const { error2 } = ProductsSchema.validate({ product })
 
     if (error1) {
@@ -31,14 +31,25 @@ export async function postItem(req, res) {
         return res.status(422).send(errorMessages)
     }
     try {
-        let cart = await db.collection("carts").findOne({ token })
+        const cart = await db.collection("carts").findOne({ token })
         if (!cart) {
             return res.status(400).send("no such session in the server")
         }
-        for (let i = 0; i < quantity; i++) {
-            await db.collection("carts").updateOne({ token }, { $set: { chosenItems: [...cart.chosenItems, product] } })
-            cart = await db.collection("carts").findOne({ token })
+        let chosenItems = cart.chosenItems
+        for (let i of chosenItems) {
+            if (product.name === i.name) {
+                if (product.price === i.price) {
+                    if (product.description === i.description) {
+                        if (product.image === i.image) {
+                            i.quantity += product.quantity
+                            await db.collection("carts").updateOne({ token }, { $set: { chosenItems: [...chosenItems] } })
+                            return res.status(200).send("quantidade atualizada")
+                        }
+                    }
+                }
+            }
         }
+        await db.collection("carts").updateOne({ token }, { $set: { chosenItems: [...cart.chosenItems, product] } })
         return res.status(200).send("item inserido com sucesso")
     } catch (error) {
         return res.status(500).send(error.message)
@@ -58,12 +69,17 @@ export async function removeItem(req, res) {
         const chosenItems = cart.chosenItems;
         let index = ""
         let j = 0
-        for(let i of chosenItems){
-            if(product.name === i.name){
-                if(product.price === i.price){
-                    if(product.description === i.description){
-                        if(product.image === i.image){
+        for (let i of chosenItems) {
+            if (product.name === i.name) {
+                if (product.price === i.price) {
+                    if (product.description === i.description) {
+                        if (product.image === i.image) {
+                            i.quantity-=1
+                            await db.collection("carts").updateOne({ token }, { $set: { chosenItems: chosenItems } })
                             index = j
+                            if(i.quantity > 0){
+                                return res.status(200).send("quantidade atualizada")
+                            }
                         }
                     }
                 }
