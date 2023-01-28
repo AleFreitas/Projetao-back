@@ -37,7 +37,7 @@ export async function session(req, res, next) {
     
     await db.collection("sessions").insertOne({ idUser: "", token });
     
-    return res.status(200).send("Sessão criada")
+    return res.status(200).send(token)
   } catch (error) {
     res.status(500).send(error.message);
   }
