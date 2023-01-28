@@ -8,7 +8,6 @@ export async function getNumberOfItems(req, res) {
     const token = authorization?.replace("Bearer ", "");
     try {
         const cart = await db.collection("carts").findOne({ token })
-        console.log(cart)
         res.status(200).send({ num: cart.chosenItems.length })
     } catch (error) {
         res.status(500).send(error.message)
@@ -52,6 +51,9 @@ export async function removeItem(req, res) {
             res.status(400).send("no such session in the server")
         }
         const chosenItems = cart.chosenItems;
+        if(!chosenItems.includes(productId)){
+            res.status(400).send("this product is not on the cart")
+        }
         const index = chosenItems.indexOf(productId)
         chosenItems.splice(index, 1)
 
