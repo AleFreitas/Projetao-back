@@ -1,5 +1,4 @@
 import bcrypt from "bcrypt";
-import { v4 as uuidV4 } from "uuid";
 import db from "../config/database.js";
 import { userSchema } from "../Schemas/AuthSchema.js";
 import { ObjectId } from "mongodb";
