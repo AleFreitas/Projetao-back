@@ -8,9 +8,9 @@ export async function getNumberOfItems(req, res) {
     const token = authorization?.replace("Bearer ", "");
     try {
         const cart = await db.collection("carts").findOne({ token })
-        res.status(200).send({ num: cart.chosenItems.length })
+        return res.status(200).send({ num: cart.chosenItems.length })
     } catch (error) {
-        res.status(500).send(error.message)
+        return res.status(500).send(error.message)
     }
 }
 
@@ -28,15 +28,15 @@ export async function postItem(req, res) {
     try {
         let cart = await db.collection("carts").findOne({ token })
         if (!cart) {
-            res.status(400).send("no such session in the server")
+            return res.status(400).send("no such session in the server")
         }
         for (let i = 0; i < quantity; i++) {
             await db.collection("carts").updateOne({ token }, { $set: { chosenItems: [...cart.chosenItems, productId] } })
             cart = await db.collection("carts").findOne({ token })
         }
-        res.status(200).send("item inserido com sucesso")
+        return res.status(200).send("item inserido com sucesso")
     } catch (error) {
-        res.status(500).send(error.message)
+        return res.status(500).send(error.message)
     }
 }
 
@@ -48,10 +48,10 @@ export async function removeItem(req, res) {
     try {
         const cart = await db.collection("carts").findOne({ token })
         if (!cart) {
-            res.sendStatus(400)
+            return res.status(400).send("no such session in the server")
         }
         if(!cart.chosenItems.includes(productId)){
-            res.status(400).send("this product is not on the cart")
+            return res.status(400).send("this product is not on the cart")
         }
         const chosenItems = cart.chosenItems;
         const index = chosenItems.indexOf(productId)
@@ -59,9 +59,9 @@ export async function removeItem(req, res) {
 
         await db.collection("carts").updateOne({ token }, { $set: { chosenItems: chosenItems } })
         
-        res.status(200).send("item removido com sucesso")
+        return res.status(200).send("item removido com sucesso")
     } catch (error) {
-        res.status(500).send(error.message)
+        return res.status(500).send(error.message)
     }
 }
 
@@ -71,10 +71,10 @@ export async function cartItems(req,res){
     try{
         const cart = await db.collection("carts").findOne({ token })
         if(!cart){
-            res.status(400).send("couldn't find a cart for this token")
+            return res.status(400).send("couldn't find a cart for this token")
         }
-        res.status(200).send(cart.chosenItems)
+        return res.status(200).send(cart.chosenItems)
     } catch (error) {
-        res.status(500).send(error.message)
+        return res.status(500).send(error.message)
     }
 }
