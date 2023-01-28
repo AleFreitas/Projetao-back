@@ -2,9 +2,12 @@ import db from "../config/database.js";
 import { ObjectId } from 'mongodb';
 
 export async function listProducts(req, res) {
+  const token = uuidV4();
   try {
+    await db.collection("sessions").insertOne({ idUser: "", token });
+    await db.collection("carts").insertOne({ userId: "", token, chosenItems:[] })
     const dados = await db.collection("products").find().toArray();
-    return res.send(dados);
+    return res.send({dados, token});
   } catch (error) {
     res.status(500).send("Deu algo errado no servidor");
   }
