@@ -48,12 +48,12 @@ export async function removeItem(req, res) {
     try {
         const cart = await db.collection("carts").findOne({ token })
         if (!cart) {
-            res.status(400).send("no such session in the server")
+            res.sendStatus(400)
         }
-        const chosenItems = cart.chosenItems;
-        if(!chosenItems.includes(productId)){
+        if(!cart.chosenItems.includes(productId)){
             res.status(400).send("this product is not on the cart")
         }
+        const chosenItems = cart.chosenItems;
         const index = chosenItems.indexOf(productId)
         chosenItems.splice(index, 1)
 
