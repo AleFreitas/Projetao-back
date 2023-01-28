@@ -36,7 +36,7 @@ export async function session(req, res, next) {
   try {
     
     await db.collection("sessions").insertOne({ idUser: "", token });
-    
+    await db.collection("carts").insertOne({ userId: "", token, chosenItems:[] })
     return res.status(200).send(token)
   } catch (error) {
     res.status(500).send(error.message);
