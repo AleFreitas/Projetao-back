@@ -63,5 +63,18 @@ export async function removeItem(req, res) {
     } catch (error) {
         res.status(500).send(error.message)
     }
+}
 
+export async function cartItems(req,res){
+    const authorization = req.headers.authorization;
+    const token = authorization?.replace("Bearer ", "");
+    try{
+        const cart = await db.collection("carts").findOne({ token })
+        if(!cart){
+            res.status(400).send("couldn't find a cart for this token")
+        }
+        res.status(200).send(cart.chosenItems)
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
 }
