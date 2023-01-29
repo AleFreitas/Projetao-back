@@ -56,11 +56,10 @@ export async function signIn(req, res) {
       await db.collection("sessions").updateOne({ _id: ObjectId(session._id) }, { $set: { idUser: checkUser._id } });
 
       const previousCart = await db.collection("carts").findOne({ idUser: checkUser._id });
+      let previousCartItems = [];
       if (previousCart) {
         const previousCartItems = previousCart.chosenItems;
         await db.collection("carts").deleteOne({ idUser: checkUser._id });
-      } else {
-        const previousCartItems = [];
       }
       const currentCart = await db.collection("carts").findOne({ token });
       const currentCartItems = currentCart.chosenItems;
