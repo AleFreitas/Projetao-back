@@ -1,6 +1,7 @@
 import { OrderSchema } from "../Schemas/Checkout.schema.js";
 
 export function CheckoutPostValidation(req, res, next) {
+  console.log(res.locals.user);
   const {
     email,
     TelNumber,
@@ -14,7 +15,7 @@ export function CheckoutPostValidation(req, res, next) {
 
   const user = res.locals.user;
 
-  console.log(user);
+/*   console.log(user); */
   
   const orderFormat = {
     email,
