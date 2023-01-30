@@ -42,7 +42,6 @@ export async function signIn(req, res) {
 
   try {
     const checkUser = await db.collection("users").findOne({ email });
-
     if (!checkUser) return res.status(400).send("Usuário ou senha incorretos");
     const isCorrectPassword = bcrypt.compareSync(password, checkUser.password);
 
@@ -60,7 +59,10 @@ export async function signIn(req, res) {
       let previousCartItems = [];
       if (previousCart) {
         previousCartItems = previousCart.chosenItems;
-        await db.collection("carts").deleteOne({ idUser: checkUser._id });
+        const currentSession = await db.collection("carts").findOne({ idUser: checkUser._id, token:token });
+        if (!currentSession) {
+          await db.collection("carts").deleteOne({ idUser: checkUser._id });
+        }
       }
       const currentCart = await db.collection("carts").findOne({ token });
       const currentCartItems = currentCart.chosenItems;
