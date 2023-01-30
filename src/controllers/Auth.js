@@ -59,8 +59,7 @@ export async function signIn(req, res) {
       let previousCartItems = [];
       if (previousCart) {
         previousCartItems = previousCart.chosenItems;
-        const currentSession = await db.collection("carts").findOne({ idUser: checkUser._id, token:token });
-        if (!currentSession) {
+        if (previousCart.token !== token) {
           await db.collection("carts").deleteOne({ idUser: checkUser._id });
         }
       }
