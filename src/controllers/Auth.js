@@ -17,6 +17,10 @@ export async function signUp(req, res) {
     const errorMessages = error.details.map((err) => err.message);
     return res.status(422).send(errorMessages);
   }
+  const userExists = db.collection("users").find({email})
+  if(userExists){
+    return res.status(400).send("Usuário já cadastrado")
+  }
 
   const passwordHashed = bcrypt.hashSync(password, 10);
 
