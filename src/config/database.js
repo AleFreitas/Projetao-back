@@ -14,5 +14,9 @@ try {
 } catch (err) {
     console.log(`conexão falhou  mongoDB : ${err.message}`);
 }
-
+export const usersCollection = db.collection("users");
+export const sessionsCollection = db.collection("sessions");
+export const productsCollection = db.collection("products");
+export const cartsCollection = db.collection("carts");
+export const CheckoutCollection = db.collection("checkout");
 export default db
