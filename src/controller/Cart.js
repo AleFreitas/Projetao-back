@@ -112,6 +112,26 @@ export async function cartItems(req, res) {
         return res.status(500).send(error.message)
     }
 }
+
+export async function totalPrice(req, res){
+    const authorization = req.headers.authorization;
+    const token = authorization?.replace("Bearer ", "");
+    try {
+        const cart = await db.collection("carts").findOne({ token })
+        if (!cart) {
+            return res.status(400).send("couldn't find a cart for this token")
+        }
+        let price = 0
+        for(let i of cart.chosenItems){
+            console.log(price)
+            price+=(parseInt(i.price)*i.quantity)
+        }
+        return res.status(200).send({price})
+    } catch (error) {
+        return res.status(500).send(error.message)
+    }
+}
+
 //FUNÇÃO APENAS PARA TESTES
 export async function removeSessions(req, res) {
     try {
