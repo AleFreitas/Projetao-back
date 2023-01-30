@@ -9,5 +9,4 @@ cartRouter.get("/cart-items", cartItems)
 cartRouter.post("/post-item", postItem)
 cartRouter.post("/remove-item", removeItem)
 cartRouter.get("/total-price",totalPrice)
-cartRouter.post("/remove",removeCarts)
 export default cartRouter
