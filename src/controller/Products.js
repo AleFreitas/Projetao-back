@@ -6,7 +6,7 @@ export async function listProducts(req, res) {
   const token = uuidV4();
   try {
     await db.collection("sessions").insertOne({ idUser: "", token });
-    await db.collection("carts").insertOne({ userId: "", token, chosenItems:[] })
+    await db.collection("carts").insertOne({ idUser: "", token, chosenItems:[] })
     const dados = await db.collection("products").find().toArray();
     return res.send({dados, token});
   } catch (error) {

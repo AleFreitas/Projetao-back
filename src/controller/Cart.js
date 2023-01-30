@@ -74,10 +74,10 @@ export async function removeItem(req, res) {
                 if (product.price === i.price) {
                     if (product.description === i.description) {
                         if (product.image === i.image) {
-                            i.quantity-=1
+                            i.quantity -= 1
                             await db.collection("carts").updateOne({ token }, { $set: { chosenItems: chosenItems } })
                             index = j
-                            if(i.quantity > 0){
+                            if (i.quantity > 0) {
                                 return res.status(200).send("quantidade atualizada")
                             }
                         }
@@ -109,6 +109,23 @@ export async function cartItems(req, res) {
         }
         return res.status(200).send(cart.chosenItems)
     } catch (error) {
+        return res.status(500).send(error.message)
+    }
+}
+//FUNÇÃO APENAS PARA TESTES
+export async function removeSessions(req, res) {
+    try {
+        const sessions = await db.collection("sessions").deleteMany({})
+        res.send(200)
+    }catch (error) {
+        return res.status(500).send(error.message)
+    }
+}
+export async function removeCarts(req, res){
+    try {
+        const sessions = await db.collection("carts").deleteMany({})
+        res.send(200)
+    }catch (error) {
         return res.status(500).send(error.message)
     }
 }
