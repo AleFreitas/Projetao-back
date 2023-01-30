@@ -17,8 +17,10 @@ export async function signUp(req, res) {
     const errorMessages = error.details.map((err) => err.message);
     return res.status(422).send(errorMessages);
   }
-  const userExists = await db.collection("user").findOne({ email });
-  if (userExists) return res.status(409).send("Este email já está em uso");
+  const userExists = await db.collection("users").findOne({ email });
+  if (userExists) {
+    return res.status(409).send("Este email já está em uso");
+  }
 
   const passwordHashed = bcrypt.hashSync(password, 10);
 
