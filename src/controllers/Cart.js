@@ -123,7 +123,6 @@ export async function totalPrice(req, res){
         }
         let price = 0
         for(let i of cart.chosenItems){
-            console.log(price)
             price+=(parseInt(i.price)*i.quantity)
         }
         return res.status(200).send({price})
