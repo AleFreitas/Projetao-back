@@ -46,7 +46,6 @@ export async function createProduct(req, res) {
       description: product.description,
       image: product.image,
     });
-    console.log(data);
     res.send("ok");
   } catch (err) {
     console.log(err);
