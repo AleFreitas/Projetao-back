@@ -48,25 +48,30 @@ export async function signIn(req, res) {
     if (!isCorrectPassword) {
       return res.status(400).send("Usuário ou senha incorretos");
     }
+    //existe o token
     if (token) {
+      //sessão já existent com usuário recebido
       const removableSession = await db.collection("sessions").findOne({ idUser: ObjectId(checkUser._id) })
+      //sessão possui token diferente do recebido
       if (removableSession && (removableSession.token !== token)) {
         await db.collection("sessions").deleteOne({ idUser: checkUser._id });
       }
-      const session = await db.collection("sessions").findOne({ token: token });
+      
+      //atualiza a sessão com token recebito e coloca o idUser
       const newSession = await db.collection("sessions").updateOne({ token }, { $set: { idUser: checkUser._id } });
-      const previousCart = await db.collection("carts").findOne({ idUser: checkUser._id });
+      
+      //carro possui id do usuário atual mas com tokens diferentes
+      const previousCart = await db.collection("carts").findOne({ idUser: checkUser._id, token: { $not: { $eq: token } } });
       let previousCartItems = [];
       if (previousCart) {
         previousCartItems = previousCart.chosenItems;
-        if (previousCart.token !== token) {
-          await db.collection("carts").deleteOne({ idUser: checkUser._id });
-        }
+        //carro possui id do usuário atual mas com tokens diferentes
+        await db.collection("carts").deleteOne({ idUser: checkUser._id, token: { $not: { $eq: token } } });
       }
+      //carro com token recebido
       const currentCart = await db.collection("carts").findOne({ token });
       const currentCartItems = currentCart.chosenItems;
       const items = [...currentCartItems, ...previousCartItems];
-      await db.collection("carts").deleteOne({ idUser: checkUser._id });
       await db.collection("carts").updateOne({ token }, { $set: { chosenItems: [...items], idUser: checkUser._id } })
       return res.status(200).send("Ok");
     }
